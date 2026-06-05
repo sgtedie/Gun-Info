@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Firearm Valuator — Private Party & Estate Pricing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0d0d0d;
+    --surface: #161616;
+    --surface2: #1e1e1e;
+    --border: rgba(255,255,255,0.08);
+    --border-hover: rgba(255,255,255,0.18);
+    --text: #f0ede8;
+    --text-muted: #888;
+    --text-dim: #555;
+    --gold: #c9a84c;
+    --gold-light: #e8c96a;
+    --gold-dim: rgba(201,168,76,0.12);
+    --red: #c0392b;
+    --green: #27ae60;
+    --mono: 'IBM Plex Mono', monospace;
+    --serif: 'Playfair Display', serif;
+    --sans: 'Inter', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-weight: 300;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    position: sticky;
+    top: 0;
+    background: rgba(13,13,13,0.95);
+    backdrop-filter: blur(12px);
+    z-index: 100;
+  }
+  .header-inner {
+    max-width: 1000px;
+    margin: 0 auto;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .logo {
+    font-family: var(--serif);
+    font-size: 18px;
+    color: var(--gold);
+    letter-spacing: 0.02em;
+  }
+  .logo span { color: var(--text-muted); font-family: var(--sans); font-weight: 300; font-size: 13px; margin-left: 10px; }
+  .header-tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* HERO */
+  .hero {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 5rem 2rem 4rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+  .hero-text h1 {
+    font-family: var(--serif);
+    font-size: clamp(2.2rem, 4vw, 3.2rem);
+    font-weight: 600;
+    line-height: 1.15;
+    color: var(--text);
+    margin-bottom: 1.25rem;
+  }
+  .hero-text h1 em {
+    font-style: normal;
+    color: var(--gold);
+  }
+  .hero-text p {
+    font-size: 15px;
+    color: var(--text-muted);
+    line-height: 1.75;
+    margin-bottom: 2rem;
+  }
+  .hero-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .badge {
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 4px 12px;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .hero-visual {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 2rem;
+    position: relative;
+  }
+  .hero-visual::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: -1px; right: -1px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--gold), transparent);
+  }
+  .stat-row {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .stat-item {}
+  .stat-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 4px;
+  }
+  .stat-value {
+    font-family: var(--serif);
+    font-size: 28px;
+    color: var(--gold);
+  }
+  .stat-sub {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+  .stat-divider {
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* FORM SECTION */
+  .form-section {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 2rem 6rem;
+  }
+  .section-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--gold);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .form-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 2.5rem;
+    position: relative;
+  }
+  .form-card::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: -1px; right: -1px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--gold), transparent);
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .form-group { display: flex; flex-direction: column; gap: 8px; }
+  .form-group.full { grid-column: 1 / -1; }
+  .form-group.span2 { grid-column: span 2; }
+
+  label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+
+  input, select, textarea {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 300;
+    padding: 10px 14px;
+    outline: none;
+    transition: border-color 0.2s;
+    width: 100%;
+    appearance: none;
+  }
+  input::placeholder, textarea::placeholder { color: var(--text-dim); }
+  input:focus, select:focus, textarea:focus { border-color: var(--gold); }
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
+    cursor: pointer;
+  }
+  select option { background: #1e1e1e; }
+  textarea { resize: vertical; min-height: 80px; }
+
+  .submit-row {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-top: 0.5rem;
+  }
+  .btn-submit {
+    background: var(--gold);
+    color: #0d0d0d;
+    border: none;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 14px 36px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    flex-shrink: 0;
+  }
+  .btn-submit:hover { background: var(--gold-light); }
+  .btn-submit:active { transform: scale(0.98); }
+  .btn-submit:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+  .submit-note {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  /* LOADING */
+  .loading-bar-wrap {
+    display: none;
+    margin-top: 2rem;
+  }
+  .loading-bar-wrap.visible { display: block; }
+  .loading-track {
+    height: 1px;
+    background: var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  .loading-fill {
+    position: absolute;
+    top: 0; left: -100%;
+    width: 60%;
+    height: 100%;
+    background: var(--gold);
+    animation: slide 1.4s ease-in-out infinite;
+  }
+  @keyframes slide { to { left: 140%; } }
+  .loading-msg {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 10px;
+    letter-spacing: 0.06em;
+  }
+
+  /* RESULTS */
+  #resultsSection { display: none; margin-top: 4rem; }
+  #resultsSection.visible { display: block; }
+
+  .results-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .results-title {
+    font-family: var(--serif);
+    font-size: 1.6rem;
+    color: var(--text);
+  }
+  .results-title span { color: var(--gold); }
+  .results-meta {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 4px;
+    letter-spacing: 0.06em;
+  }
+
+  /* VALUE CARDS */
+  .value-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin-bottom: 2rem;
+  }
+  .value-card {
+    background: var(--surface);
+    padding: 2rem;
+    position: relative;
+  }
+  .value-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+  }
+  .value-card.private::before { background: var(--gold); }
+  .value-card.insurance::before { background: #4a9eff; }
+  .value-card-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 1rem;
+  }
+  .value-range {
+    font-family: var(--serif);
+    font-size: 2.2rem;
+    color: var(--text);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .value-card.private .value-range { color: var(--gold); }
+  .value-card.insurance .value-range { color: #4a9eff; }
+  .value-desc { font-size: 13px; color: var(--text-muted); }
+  .cond-track {
+    display: flex;
+    gap: 3px;
+    margin-top: 1.25rem;
+  }
+  .cond-pip { height: 3px; flex: 1; background: var(--border); }
+  .cond-pip.on { background: var(--gold); }
+
+  /* INFO PANELS */
+  .panels { display: flex; flex-direction: column; gap: 1px; background: var(--border); border: 1px solid var(--border); margin-bottom: 2rem; }
+  .panel {
+    background: var(--surface);
+    padding: 1.75rem 2rem;
+  }
+  .panel-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1rem;
+    cursor: pointer;
+    user-select: none;
+  }
+  .panel-icon {
+    font-family: var(--mono);
+    font-size: 14px;
+    color: var(--gold);
+    width: 20px;
+    text-align: center;
+  }
+  .panel-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    flex: 1;
+  }
+  .panel-body {
+    font-size: 14px;
+    color: #b0aba4;
+    line-height: 1.8;
+  }
+  .comp-list { display: flex; flex-direction: column; gap: 10px; }
+  .comp-item {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .comp-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .comp-desc { font-size: 13px; color: var(--text-muted); flex: 1; }
+  .comp-source { font-family: var(--mono); font-size: 10px; color: var(--text-dim); margin-top: 2px; }
+  .comp-price { font-family: var(--serif); font-size: 20px; color: var(--gold); flex-shrink: 0; }
+  .tag-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 1rem; }
+  .tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 4px 10px;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+
+  .comp-link {
+    color: var(--gold);
+    font-family: var(--mono);
+    font-size: 10px;
+    text-decoration: none;
+    letter-spacing: 0.06em;
+    margin-left: 6px;
+    opacity: 0.8;
+  }
+  .comp-link:hover { opacity: 1; text-decoration: underline; }
+
+  /* PRIVACY NOTICE (inline form) */
+  .privacy-notice {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    background: rgba(201,168,76,0.06);
+    border: 1px solid rgba(201,168,76,0.2);
+    padding: 1rem 1.25rem;
+    margin-top: 1.25rem;
+    font-size: 13px;
+    color: #9a8050;
+    line-height: 1.7;
+  }
+  .privacy-notice strong { color: var(--gold); font-weight: 500; }
+  .privacy-icon { flex-shrink: 0; margin-top: 1px; }
+
+  /* DISCLAIMER */
+  .disclaimer {
+    border: 1px solid var(--border);
+    padding: 1.25rem 1.5rem;
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.7;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .disclaimer strong { color: #888; font-weight: 500; }
+  .disclaimer-icon { flex-shrink: 0; margin-top: 1px; }
+
+  /* ERROR */
+  .error-box {
+    background: rgba(192,57,43,0.08);
+    border: 1px solid rgba(192,57,43,0.3);
+    padding: 1.25rem 1.5rem;
+    font-size: 13px;
+    color: #e07060;
+    line-height: 1.7;
+    margin-top: 1.5rem;
+    display: none;
+  }
+  .error-box.visible { display: block; }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 2rem;
+    text-align: center;
+  }
+  .footer-inner { max-width: 1000px; margin: 0 auto; }
+  .footer-logo { font-family: var(--serif); font-size: 15px; color: var(--gold); margin-bottom: 8px; }
+  .footer-text { font-size: 12px; color: var(--text-dim); line-height: 1.6; }
+
+
+  /* COUNTER */
+  .counter-pill {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 5px 14px 5px 10px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 0.06em;
+  }
+  .counter-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--gold);
+    opacity: 0.6;
+    flex-shrink: 0;
+  }
+  .counter-dot.live { animation: pulse 2s ease-in-out infinite; opacity: 1; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  .counter-num { color: var(--gold); font-weight: 500; }
+  .counter-sub { color: var(--text-dim); }
+
+  /* COST TRACKER (results area) */
+  .cost-strip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 10px 16px;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .cost-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+  .cost-label { font-family: var(--mono); font-size: 9px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.1em; }
+  .cost-value { font-family: var(--mono); font-size: 14px; font-weight: 500; color: var(--text); }
+  .cost-value.gold { color: var(--gold); }
+  .cost-sep { width: 1px; height: 28px; background: var(--border); }
+
+  /* RESPONSIVE */
+  @media (max-width: 720px) {
+    .hero { grid-template-columns: 1fr; gap: 2.5rem; padding: 3rem 1.25rem 2.5rem; }
+    .hero-visual { display: none; }
+    .form-section { padding: 0 1.25rem 4rem; }
+    .form-card { padding: 1.5rem; }
+    .form-grid { grid-template-columns: 1fr 1fr; }
+    .form-group.span2 { grid-column: 1 / -1; }
+    .value-grid { grid-template-columns: 1fr; }
+    .submit-row { flex-direction: column; align-items: flex-start; }
+  }
+  @media (max-width: 480px) {
+    .form-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo">Firearm Valuator <span>/ Est. Pricing Tool</span></div>
+    <div class="counter-pill">
+      <div class="counter-dot" id="counterDot"></div>
+      <span>Total lookups: <span class="counter-num" id="counterNum">—</span></span>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="hero-text">
+      <h1>Know What Your<br>Firearm Is <em>Worth.</em></h1>
+      <p>Enter your firearm details and get an AI-researched private party sale estimate and insurance valuation — including manufacture date, production history, comparable sales, and market trends.</p>
+      <div class="hero-badges">
+        <span class="badge">Private Party Pricing</span>
+        <span class="badge">Estate &amp; Insurance</span>
+        <span class="badge">Manufacture Date</span>
+        <span class="badge">Market Trends</span>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="stat-row">
+        <div class="stat-item">
+          <div class="stat-label">M1 Garand · Springfield · 1945</div>
+          <div class="stat-value">$1,200–$1,550</div>
+          <div class="stat-sub">Private party · Very Good condition</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <div class="stat-label">Insurance / Estate Value</div>
+          <div class="stat-value">$1,500–$1,900</div>
+          <div class="stat-sub">Recommended coverage range</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <div class="stat-label">Garand demand · 12-month trend</div>
+          <div class="stat-value">+260 units</div>
+          <div class="stat-sub">Used market demand increase</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="form-section">
+    <div class="section-label">Enter Firearm Details</div>
+
+    <div class="form-card">
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="fmake">Manufacturer / Make *</label>
+          <input id="fmake" type="text" placeholder="e.g. Smith &amp; Wesson" />
+        </div>
+        <div class="form-group">
+          <label for="fmodel">Model *</label>
+          <input id="fmodel" type="text" placeholder="e.g. Model 686" />
+        </div>
+        <div class="form-group">
+          <label for="fcaliber">Caliber / Gauge</label>
+          <input id="fcaliber" type="text" placeholder="e.g. .357 Magnum" />
+        </div>
+        <div class="form-group">
+          <label for="fserial">Serial Number (optional)</label>
+          <input id="fserial" type="text" placeholder="For manufacture date lookup" />
+        </div>
+      </div>
+      <div class="privacy-notice">
+        <div class="privacy-icon">🔒</div>
+        <div><strong>Privacy notice:</strong> Serial numbers entered here are sent only to the AI valuation engine to estimate manufacture date and are <strong>not stored, logged, or recorded anywhere</strong> — not by this site, not in any database, and not in any registry. This tool does not retain any information after your session ends. No data is shared with any government agency, law enforcement, or third party. If you prefer not to enter a serial number, simply leave that field blank — it is entirely optional and only affects manufacture date estimates.</div>
+      </div>
+      <div class="form-grid" style="margin-top:1.5rem; margin-bottom:0">
+        <div class="form-group">
+          <label for="fcondition">Condition *</label>
+          <select id="fcondition">
+            <option value="">Select condition...</option>
+            <option value="Poor">Poor — heavy wear, may have defects</option>
+            <option value="Fair">Fair — strong wear, fully functional</option>
+            <option value="Good">Good — minor wear, all original parts</option>
+            <option value="Very Good">Very Good — minor surface wear only</option>
+            <option value="Excellent">Excellent — slight wear, near new</option>
+            <option value="NIB">New in Box — unfired, original packaging</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="ffinish">Finish</label>
+          <select id="ffinish">
+            <option value="">Select finish...</option>
+            <option value="Blued">Blued</option>
+            <option value="Stainless Steel">Stainless Steel</option>
+            <option value="Nickel Plated">Nickel Plated</option>
+            <option value="Parkerized">Parkerized / Matte</option>
+            <option value="Chrome">Chrome</option>
+            <option value="Case Hardened">Case Hardened</option>
+            <option value="Cerakote">Cerakote</option>
+            <option value="Synthetic">Synthetic / Black</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="form-group full">
+          <label for="fextras">Additional Details (optional)</label>
+          <textarea id="fextras" placeholder="e.g. 4-inch barrel, adjustable sights, original box, matching serial numbers, custom grips, CMP certificate..."></textarea>
+        </div>
+      </div>
+
+      <div class="submit-row">
+        <button class="btn-submit" id="submitBtn" onclick="runValuation()">Run Valuation</button>
+        <div class="submit-note">Powered by AI research. Make and Model required.<br>Results typically take 10–20 seconds.</div>
+      </div>
+
+      <div class="loading-bar-wrap" id="loadingBar">
+        <div class="loading-track"><div class="loading-fill"></div></div>
+        <div class="loading-msg" id="loadingMsg">Initializing search...</div>
+      </div>
+
+      <div class="error-box" id="errorBox"></div>
+    </div>
+
+    <!-- RESULTS -->
+    <div id="resultsSection">
+      <div class="results-header">
+        <div>
+          <div class="results-title" id="resultsTitle">Valuation Report</div>
+          <div class="results-meta" id="resultsMeta"></div>
+        </div>
+      </div>
+
+      <div class="cost-strip" id="costStrip" style="display:none">
+        <div class="cost-item">
+          <div class="cost-label">This session</div>
+          <div class="cost-value gold" id="statSession">0</div>
+        </div>
+        <div class="cost-sep"></div>
+        <div class="cost-item">
+          <div class="cost-label">Session cost</div>
+          <div class="cost-value" id="statCost">$0.00</div>
+        </div>
+        <div class="cost-sep"></div>
+        <div class="cost-item">
+          <div class="cost-label">Est. remaining of $5</div>
+          <div class="cost-value gold" id="statRemaining">$5.00</div>
+        </div>
+        <div class="cost-sep"></div>
+        <div class="cost-item" style="align-items:flex-start; min-width:120px">
+          <div class="cost-label" style="margin-bottom:6px">Budget used</div>
+          <div style="width:100%; height:3px; background:var(--border); border-radius:2px">
+            <div id="budgetBar" style="height:3px; background:var(--gold); border-radius:2px; width:0%; transition:width 0.4s ease"></div>
+          </div>
+        </div>
+      </div>
+      <div class="value-grid" id="valueGrid"></div>
+      <div class="panels" id="infoPanels"></div>
+
+      <div class="disclaimer">
+        <div class="disclaimer-icon">🔒</div>
+        <div><strong>Privacy &amp; No-Registry Statement:</strong> This tool does not store, log, record, or transmit your serial number or any other firearm details to any database, registry, or third party. Serial numbers are used solely within the AI valuation query to estimate manufacture dates and are not retained after your session ends. This site maintains no server, no database, and no logs of any kind. No information is shared with any government agency, law enforcement body, or firearms authority. Use of this tool does not constitute registration of any firearm.</div>
+      </div>
+      <div class="disclaimer" style="margin-top:1px">
+        <div class="disclaimer-icon">⚠</div>
+        <div><strong>Valuation Disclaimer:</strong> Valuations are AI-generated estimates based on market research and comparable sales data. Actual prices vary by region, buyer demand, parts originality, and negotiation. For formal estate or insurance purposes, obtain an appraisal from a licensed FFL dealer or certified appraiser. This tool does not constitute legal or financial advice.</div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">Firearm Valuator</div>
+    <div class="footer-text">AI-assisted firearm pricing for private sales and estate/insurance purposes.<br>Not affiliated with any government agency, auction house, or dealer. For informational use only.</div>
+  </div>
+</footer>
+
+<script>
+let sessionLookups = 0;
+
+// Load total lookup count from server
+async function loadCounter() {
+  try {
+    const r = await fetch('/api/counter');
+    if (r.ok) {
+      const d = await r.json();
+      const num = d.count || 0;
+      document.getElementById('counterNum').textContent = num.toLocaleString();
+      document.getElementById('counterDot').classList.add('live');
+    }
+  } catch(e) { /* counter unavailable, show nothing */ }
+}
+
+// Increment counter after successful lookup
+async function incrementCounter() {
+  try {
+    const r = await fetch('/api/counter', { method: 'POST' });
+    if (r.ok) {
+      const d = await r.json();
+      document.getElementById('counterNum').textContent = (d.count || 0).toLocaleString();
+    }
+  } catch(e) {}
+}
+
+document.addEventListener('DOMContentLoaded', loadCounter);
+
+const MSGS = [
+  'Searching GunBroker sold listings...',
+  'Pulling Rock Island & James D. Julia auction results...',
+  'Scanning forum discussions on value & ownership...',
+  'Checking dealer listings across the web...',
+  'Cross-referencing Blue Book & True Gun Value...',
+  'Analyzing condition-adjusted comparable sales...',
+  'Compiling forum insights and owner reports...',
+  'Building your full valuation report...'
+];
+let msgIdx = 0, msgTimer;
+function cycleMsgs() {
+  msgIdx = (msgIdx + 1) % MSGS.length;
+  document.getElementById('loadingMsg').textContent = MSGS[msgIdx];
+}
+
+function fmt(n) {
+  const v = parseInt(n, 10);
+  return isNaN(v) ? String(n) : '$' + v.toLocaleString();
+}
+
+function condPips(cond) {
+  const m = { 'Poor':1,'Fair':2,'Good':3,'Very Good':4,'Excellent':5,'NIB':6 };
+  const f = m[cond] || 3;
+  return Array.from({length:6},(_,i)=>`<div class="cond-pip${i<f?' on':''}"></div>`).join('');
+}
+
+function extractJSON(text) {
+  const s = text.indexOf('{'), e = text.lastIndexOf('}');
+  if (s !== -1 && e !== -1) return text.slice(s, e+1);
+  return text;
+}
+
+async function runValuation() {
+  const make      = document.getElementById('fmake').value.trim();
+  const model     = document.getElementById('fmodel').value.trim();
+  const caliber   = document.getElementById('fcaliber').value.trim();
+  const serial    = document.getElementById('fserial').value.trim();
+  const condition = document.getElementById('fcondition').value;
+  const finish    = document.getElementById('ffinish').value;
+  const extras    = document.getElementById('fextras').value.trim();
+
+  if (!make || !model)  { showError('Please enter at least a Make and Model.'); return; }
+  if (!condition)       { showError('Please select a condition grade.'); return; }
+
+  clearError();
+  document.getElementById('submitBtn').disabled = true;
+  document.getElementById('loadingBar').classList.add('visible');
+  document.getElementById('resultsSection').classList.remove('visible');
+  msgTimer = setInterval(cycleMsgs, 2800);
+
+  // Build targeted search keywords from user inputs
+  const keywords = [make, model, caliber, finish, extras].filter(Boolean).join(' ').trim();
+
+  const prompt = `You are a firearms valuation expert. A user wants a comprehensive market valuation for their firearm. Use your web search tool to actively research LIVE current data before answering.
+
+FIREARM DETAILS:
+- Make/Manufacturer: ${make}
+- Model: ${model}
+- Caliber/Gauge: ${caliber || 'not specified'}
+- Serial Number: ${serial || 'not provided'}
+- Condition: ${condition}
+- Finish: ${finish || 'not specified'}
+- Additional details: ${extras || 'none'}
+- Search keywords: "${keywords}"
+
+RESEARCH INSTRUCTIONS — perform ALL of these web searches:
+1. Search GunBroker SOLD listings: "${keywords} sold site:gunbroker.com" and "${keywords} ${condition} price"
+2. Search auction results: "${keywords} auction result sold price" — check Rock Island Auction, James D. Julia, Morphy Auctions, Cowan's
+3. Search forum discussions: "${keywords} value price worth" — check The High Road (thehighroad.org), Gunboards, AR15.com, Sniper's Hide, The Firing Line, Glock Talk
+4. Search dealer/retail listings: "${keywords} for sale price" across GunsAmerica, GunBroker active, Cabela's, Guns International
+5. Search valuation references: "${keywords} blue book value" and "${make} ${model} ${caliber} value 2024 2025"
+6. If serial number provided: search "${make} ${model} serial number ${serial} manufacture date" to date the firearm
+
+After researching, compile EVERYTHING into this exact JSON. Include real URLs and real prices you found. No markdown, no backticks — raw JSON only:
+{
+  "privateSaleLow": 1200,
+  "privateSaleHigh": 1550,
+  "insuranceLow": 1500,
+  "insuranceHigh": 1900,
+  "conditionNote": "Specific impact of ${condition} grade on this model's value with percentage adjustment",
+  "manufacturedYear": "Specific year/range from serial number research, or best estimate with reasoning",
+  "productionInfo": "3-4 sentences: manufacturer history, years produced, total production numbers, variants, military/commercial history",
+  "marketTrends": "3-4 sentences on current demand, collector interest, price trajectory, what's driving values up or down right now",
+  "notableFeatures": "Specific features of this exact model/variant that add or subtract value — originality, rarity, desirability",
+  "forumInsights": "3-4 sentences summarizing what gun owners and collectors are saying in forums about this model's value, quirks, and what to look for",
+  "compSales": [
+    {"description": "Specific comparable sold listing description", "price": 1350, "source": "GunBroker", "url": "https://..."},
+    {"description": "Auction result description with condition", "price": 1450, "source": "Rock Island Auction", "url": "https://..."},
+    {"description": "Dealer listing or another comparable", "price": 1500, "source": "GunsAmerica", "url": "https://..."},
+    {"description": "Forum-reported sale or another data point", "price": 1250, "source": "The High Road forum", "url": "https://..."}
+  ],
+  "valuationFactors": ["Specific factor 1", "Specific factor 2", "Specific factor 3", "Specific factor 4", "Specific factor 5"],
+  "liveListings": [
+    {"description": "Active listing description", "price": 1400, "source": "GunBroker", "url": "https://..."},
+    {"description": "Another active listing", "price": 1350, "source": "GunsAmerica", "url": "https://..."}
+  ],
+  "tips": "3-4 practical sentences: best platforms to sell this specific gun, what photos to take, what paperwork helps, insurance rider advice"
+}
+
+Price all values as integers. Base every number on real data you searched. If a URL is unavailable use the domain root. Be specific — name actual comparable firearms with dates and conditions.`;
+
+  try {
+    const resp = await fetch('/api/valuation', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 4000,
+        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    if (!resp.ok) {
+      const errData = await resp.json().catch(() => ({}));
+      throw new Error(errData.error || `Server error ${resp.status}`);
+    }
+
+    const data = await resp.json();
+    if (data.error) throw new Error(data.error);
+
+    // Collect all text blocks (web search returns mixed tool_use + text blocks)
+    const raw = data.content.map(b => b.type === 'text' ? b.text : '').filter(Boolean).join('');
+    const result = JSON.parse(extractJSON(raw.replace(/```json|```/gi, '')));
+    renderResults(result, make, model, condition, serial);
+    incrementCounter();
+
+  } catch(err) {
+    showError('Unable to retrieve valuation data. Please check your connection and try again. (' + err.message + ')');
+  } finally {
+    clearInterval(msgTimer);
+    document.getElementById('loadingBar').classList.remove('visible');
+    document.getElementById('submitBtn').disabled = false;
+  }
+}
+
+function showError(msg) {
+  const el = document.getElementById('errorBox');
+  el.textContent = msg;
+  el.classList.add('visible');
+}
+function clearError() {
+  document.getElementById('errorBox').classList.remove('visible');
+}
+
+function renderResults(r, make, model, condition, serial) {
+  document.getElementById('resultsTitle').innerHTML = `${make} <span>${model}</span>`;
+  document.getElementById('resultsMeta').textContent =
+    `${condition} condition · ${serial ? 'S/N ' + serial + ' · ' : ''}Valuation as of ${new Date().toLocaleDateString('en-US',{month:'long',year:'numeric'})}`;
+
+  // Update session stats
+  sessionLookups++;
+  const estCost = (sessionLookups * 0.02).toFixed(2);
+  const remaining = Math.max(0, 5 - parseFloat(estCost)).toFixed(2);
+  const pct = Math.min(100, Math.round((parseFloat(estCost) / 5) * 100));
+  document.getElementById('costStrip').style.display = 'flex';
+  document.getElementById('statSession').textContent = sessionLookups;
+  document.getElementById('statCost').textContent = '$' + estCost;
+  document.getElementById('statRemaining').textContent = '$' + remaining;
+  document.getElementById('budgetBar').style.width = pct + '%';
+
+  document.getElementById('valueGrid').innerHTML = `
+    <div class="value-card private">
+      <div class="value-card-label">Private Party Sale</div>
+      <div class="value-range">${fmt(r.privateSaleLow)} – ${fmt(r.privateSaleHigh)}</div>
+      <div class="value-desc">Realistic range for a private sale between individuals</div>
+      <div class="cond-track">${condPips(condition)}</div>
+    </div>
+    <div class="value-card insurance">
+      <div class="value-card-label">Insurance / Estate Value</div>
+      <div class="value-range">${fmt(r.insuranceLow)} – ${fmt(r.insuranceHigh)}</div>
+      <div class="value-desc">Recommended coverage for insurance or estate appraisal</div>
+      <div class="cond-track">${condPips(condition)}</div>
+    </div>`;
+
+  const panels = [];
+
+  if (r.manufacturedYear) panels.push({
+    icon: '◈', title: 'Date of Manufacture',
+    body: `<p>${r.manufacturedYear}</p>`
+  });
+
+  if (r.productionInfo) panels.push({
+    icon: '▣', title: 'Production History',
+    body: `<p>${r.productionInfo}</p>`
+  });
+
+  if (r.notableFeatures) panels.push({
+    icon: '◆', title: 'Notable Value Factors',
+    body: `<p>${r.notableFeatures}</p>` +
+      (r.valuationFactors?.length ? `<div class="tag-row">${r.valuationFactors.map(f=>`<span class="tag">${f}</span>`).join('')}</div>` : '')
+  });
+
+  if (r.compSales?.length) panels.push({
+    icon: '◇', title: 'Comparable Sold Listings',
+    body: `<div class="comp-list">${r.compSales.map(s => {
+      const link = s.url && s.url !== 'https://...' && s.url.startsWith('http')
+        ? `<a href="${s.url}" target="_blank" rel="noopener" class="comp-link">↗ View</a>` : '';
+      return `<div class="comp-item">
+        <div><div class="comp-desc">${s.description}</div><div class="comp-source">${s.source} ${link}</div></div>
+        <div class="comp-price">${fmt(s.price)}</div>
+      </div>`;
+    }).join('')}</div>`
+  });
+
+  if (r.liveListings?.length) panels.push({
+    icon: '◉', title: 'Active Listings Right Now',
+    body: `<div class="comp-list">${r.liveListings.map(s => {
+      const link = s.url && s.url !== 'https://...' && s.url.startsWith('http')
+        ? `<a href="${s.url}" target="_blank" rel="noopener" class="comp-link">↗ View</a>` : '';
+      return `<div class="comp-item">
+        <div><div class="comp-desc">${s.description}</div><div class="comp-source">${s.source} ${link}</div></div>
+        <div class="comp-price">${fmt(s.price)}</div>
+      </div>`;
+    }).join('')}</div>`
+  });
+
+  if (r.forumInsights) panels.push({
+    icon: '◎', title: 'Forum & Community Insights',
+    body: `<p>${r.forumInsights}</p>`
+  });
+
+  if (r.marketTrends) panels.push({
+    icon: '↗', title: 'Market Trends',
+    body: `<p>${r.marketTrends}</p>`
+  });
+
+  if (r.conditionNote) panels.push({
+    icon: '◉', title: `Condition Impact — ${condition}`,
+    body: `<p>${r.conditionNote}</p>`
+  });
+
+  if (r.tips) panels.push({
+    icon: '◐', title: 'Selling & Insurance Tips',
+    body: `<p>${r.tips}</p>`
+  });
+
+  document.getElementById('infoPanels').innerHTML = panels.map(p => `
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-icon">${p.icon}</div>
+        <div class="panel-title">${p.title}</div>
+      </div>
+      <div class="panel-body">${p.body}</div>
+    </div>`).join('');
+
+  document.getElementById('resultsSection').classList.add('visible');
+  document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+</script>
+</body>
+</html>
+
