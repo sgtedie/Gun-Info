@@ -913,9 +913,13 @@ Price all values as integers. Base every number on real data you searched. If a 
       },
       body: JSON.stringify({
         apiKey: storedKey,
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 3000,
-        messages: [{ role: 'user', content: prompt }]
+        serialNumber: serial,
+        firearm_make: make,
+        firearm_model: model,
+        firearm_caliber: caliber,
+        firearm_condition: condition,
+        firearm_finish: finish,
+        firearm_extras: extras
       })
     });
 
