@@ -428,6 +428,18 @@
   }
 
 
+  .search-btn {
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 6px 14px;
+    background: var(--gold-dim);
+    border: 1px solid rgba(201,168,76,0.3);
+    color: var(--gold);
+    text-decoration: none;
+    letter-spacing: 0.06em;
+    transition: background 0.15s;
+  }
+  .search-btn:hover { background: rgba(201,168,76,0.2); }
   .comp-link {
     color: var(--gold);
     font-family: var(--mono);
@@ -987,28 +999,49 @@ function renderResults(r, make, model, condition, serial) {
       (r.valuationFactors?.length ? `<div class="tag-row">${r.valuationFactors.map(f=>`<span class="tag">${f}</span>`).join('')}</div>` : '')
   });
 
+  // Build real search URLs from make/model
+  const gbSearch = 'https://www.gunbroker.com/All/search?Keywords=' + encodeURIComponent(make + ' ' + model);
+  const gaSearch = 'https://www.gunsamerica.com/Search.aspx?T=1&q=' + encodeURIComponent(make + ' ' + model);
+  const riaSearch = 'https://www.rockislandauction.com/search#q=' + encodeURIComponent(make + ' ' + model);
+  const giSearch = 'https://www.gunsinternational.com/guns-for-sale-online/?q=' + encodeURIComponent(make + ' ' + model);
+
+  function getSearchLink(source) {
+    const s = (source || '').toLowerCase();
+    if (s.includes('gunbroker')) return gbSearch;
+    if (s.includes('rock island') || s.includes('ria')) return riaSearch;
+    if (s.includes('gunsamerica') || s.includes('guns america')) return gaSearch;
+    if (s.includes('guns international')) return giSearch;
+    return gbSearch;
+  }
+
   if (r.compSales?.length) panels.push({
     icon: '◇', title: 'Comparable Sold Listings',
     body: `<div class="comp-list">${r.compSales.map(s => {
-      const link = s.url && s.url !== 'https://...' && s.url.startsWith('http')
-        ? `<a href="${s.url}" target="_blank" rel="noopener" class="comp-link">↗ View</a>` : '';
+      const link = `<a href="${getSearchLink(s.source)}" target="_blank" rel="noopener" class="comp-link">↗ Search ${s.source || 'GunBroker'}</a>`;
       return `<div class="comp-item">
         <div><div class="comp-desc">${s.description}</div><div class="comp-source">${s.source} ${link}</div></div>
         <div class="comp-price">${fmt(s.price)}</div>
       </div>`;
-    }).join('')}</div>`
+    }).join('')}</div>
+    <div style="margin-top:12px;font-size:12px;color:var(--text-dim)">Links open live search results for this firearm on each platform.</div>`
   });
 
   if (r.liveListings?.length) panels.push({
-    icon: '◉', title: 'Active Listings Right Now',
+    icon: '◉', title: 'Search Active Listings',
     body: `<div class="comp-list">${r.liveListings.map(s => {
-      const link = s.url && s.url !== 'https://...' && s.url.startsWith('http')
-        ? `<a href="${s.url}" target="_blank" rel="noopener" class="comp-link">↗ View</a>` : '';
+      const link = `<a href="${getSearchLink(s.source)}" target="_blank" rel="noopener" class="comp-link">↗ Search ${s.source || 'GunBroker'}</a>`;
       return `<div class="comp-item">
         <div><div class="comp-desc">${s.description}</div><div class="comp-source">${s.source} ${link}</div></div>
         <div class="comp-price">${fmt(s.price)}</div>
       </div>`;
-    }).join('')}</div>`
+    }).join('')}</div>
+    <div style="margin-top:12px;font-size:12px;color:var(--text-dim)">Links open live search results for this firearm on each platform.</div>
+    <div class="search-buttons" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px">
+      <a href="${gbSearch}" target="_blank" rel="noopener" class="search-btn">↗ GunBroker</a>
+      <a href="${gaSearch}" target="_blank" rel="noopener" class="search-btn">↗ GunsAmerica</a>
+      <a href="${riaSearch}" target="_blank" rel="noopener" class="search-btn">↗ Rock Island Auction</a>
+      <a href="${giSearch}" target="_blank" rel="noopener" class="search-btn">↗ Guns International</a>
+    </div>`
   });
 
   if (r.forumInsights) panels.push({
