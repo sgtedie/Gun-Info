@@ -665,6 +665,11 @@
         </div>
       </div>
 
+      <div class="form-group full" id="apiKeyGroup" style="margin-top:1rem">
+        <label for="apiKeyInput">Anthropic API Key <span style="color:var(--text-dim);font-weight:400;text-transform:none;letter-spacing:0">(saved in your browser only — never stored on any server)</span></label>
+        <input id="apiKeyInput" type="password" placeholder="sk-ant-api03-..." autocomplete="off" />
+      </div>
+
       <div class="submit-row">
         <button class="btn-submit" id="submitBtn" onclick="runValuation()">Run Valuation</button>
         <div class="submit-note">Powered by AI research. Make and Model required.<br>Results typically take 10–20 seconds.</div>
@@ -759,7 +764,14 @@ async function incrementCounter() {
   } catch(e) {}
 }
 
-document.addEventListener('DOMContentLoaded', loadCounter);
+document.addEventListener('DOMContentLoaded', () => {
+  loadCounter();
+  // Hide API key field if already saved
+  if (localStorage.getItem('anthropic_api_key')) {
+    const g = document.getElementById('apiKeyGroup');
+    if (g) g.style.display = 'none';
+  }
+});
 
 const MSGS = [
   'Searching GunBroker sold listings...',
@@ -864,12 +876,20 @@ After researching, compile EVERYTHING into this exact JSON. Include real URLs an
 Price all values as integers. Base every number on real data you searched. If a URL is unavailable use the domain root. Be specific — name actual comparable firearms with dates and conditions.`;
 
   try {
-    // Get API key from localStorage
-   let storedKey = localStorage.getItem('anthropic_api_key');
+    // Get API key - check input field first, then localStorage
+    let storedKey = localStorage.getItem('anthropic_api_key');
+    const inputKey = document.getElementById('apiKeyInput').value.trim();
+    if (inputKey) {
+      storedKey = inputKey;
+      localStorage.setItem('anthropic_api_key', inputKey);
+      document.getElementById('apiKeyGroup').style.display = 'none';
+    }
     if (!storedKey) {
-      storedKey = document.getElementById('apiKeyInput')?.value?.trim();
-      if (!storedKey) { showError('Please enter your Anthropic API key above.'); document.getElementById('submitBtn').disabled = false; clearInterval(msgTimer); document.getElementById('loadingBar').classList.remove('visible'); return; }
-      localStorage.setItem('anthropic_api_key', storedKey);
+      showError('Please enter your Anthropic API key in the field above.');
+      document.getElementById('submitBtn').disabled = false;
+      clearInterval(msgTimer);
+      document.getElementById('loadingBar').classList.remove('visible');
+      return;
     }
 
     const resp = await fetch('https://corsproxy.io/?url=https://api.anthropic.com/v1/messages', {
