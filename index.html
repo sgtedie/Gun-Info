@@ -864,13 +864,25 @@ After researching, compile EVERYTHING into this exact JSON. Include real URLs an
 Price all values as integers. Base every number on real data you searched. If a URL is unavailable use the domain root. Be specific — name actual comparable firearms with dates and conditions.`;
 
   try {
-    const resp = await fetch('/api/valuation', {
+    // Get API key from localStorage
+    const apiKey = localStorage.getItem('anthropic_api_key');
+    if (!apiKey) {
+      const key = prompt('Enter your Anthropic API key (sk-ant-...):');
+      if (!key) { showError('API key required.'); document.getElementById('submitBtn').disabled = false; clearInterval(msgTimer); document.getElementById('loadingBar').classList.remove('visible'); return; }
+      localStorage.setItem('anthropic_api_key', key);
+    }
+    const storedKey = localStorage.getItem('anthropic_api_key');
+
+    const resp = await fetch('https://corsproxy.io/?url=https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'x-api-key': storedKey,
+        'anthropic-version': '2023-06-01'
+      },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
-        max_tokens: 4000,
-        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+        max_tokens: 3000,
         messages: [{ role: 'user', content: prompt }]
       })
     });
