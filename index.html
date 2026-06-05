@@ -892,14 +892,15 @@ Price all values as integers. Base every number on real data you searched. If a 
       return;
     }
 
-    const resp = await fetch('https://corsproxy.io/?url=https://api.anthropic.com/v1/messages', {
+    const resp = await fetch('https://sgte--de8a8bf4609511f190841607ee4eb77e.web.val.run', {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
         'x-api-key': storedKey,
-        'anthropic-version': '2023-06-01'
+        'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
+        apiKey: storedKey,
         model: 'claude-sonnet-4-20250514',
         max_tokens: 3000,
         messages: [{ role: 'user', content: prompt }]
