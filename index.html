@@ -813,9 +813,72 @@ function condPips(cond) {
 }
 
 function extractJSON(text) {
-  const s = text.indexOf('{'), e = text.lastIndexOf('}');
-  if (s !== -1 && e !== -1) return text.slice(s, e+1);
-  return text;
+  // Clean up common AI response artifacts
+  let cleaned = text.replace(/```json|```/gi, '').trim();
+  const s = cleaned.indexOf('{'), e = cleaned.lastIndexOf('}');
+  if (s !== -1 && e !== -1) cleaned = cleaned.slice(s, e+1);
+  return cleaned;
+}
+
+function safeParseJSON(text) {
+  // First try direct parse
+  try { return JSON.parse(text); } catch(e1) {}
+  
+  // Try to fix truncated JSON by closing open structures
+  try {
+    let fixed = text.trim();
+    // Count open braces/brackets
+    let braces = 0, brackets = 0, inString = false, escape = false;
+    for (let i = 0; i < fixed.length; i++) {
+      const c = fixed[i];
+      if (escape) { escape = false; continue; }
+      if (c === '\\' && inString) { escape = true; continue; }
+      if (c === '"' && !escape) { inString = !inString; continue; }
+      if (!inString) {
+        if (c === '{') braces++;
+        if (c === '}') braces--;
+        if (c === '[') brackets++;
+        if (c === ']') brackets--;
+      }
+    }
+    // Close any open structures
+    while (brackets > 0) { fixed += ']'; brackets--; }
+    while (braces > 0) { fixed += '}'; braces--; }
+    return JSON.parse(fixed);
+  } catch(e2) {}
+
+  // Try to extract just the fields we need with a minimal valid object
+  try {
+    const fallback = {
+      privateSaleLow: extractNum(text, 'privateSaleLow') || 0,
+      privateSaleHigh: extractNum(text, 'privateSaleHigh') || 0,
+      insuranceLow: extractNum(text, 'insuranceLow') || 0,
+      insuranceHigh: extractNum(text, 'insuranceHigh') || 0,
+      manufacturedYear: extractStr(text, 'manufacturedYear') || 'See research below',
+      productionInfo: extractStr(text, 'productionInfo') || '',
+      notableFeatures: extractStr(text, 'notableFeatures') || '',
+      conditionNote: extractStr(text, 'conditionNote') || '',
+      marketTrends: extractStr(text, 'marketTrends') || '',
+      forumInsights: extractStr(text, 'forumInsights') || '',
+      compSales: [],
+      liveListings: [],
+      valuationFactors: [],
+      tips: extractStr(text, 'tips') || ''
+    };
+    if (fallback.privateSaleLow > 0) return fallback;
+  } catch(e3) {}
+
+  throw new Error('Could not parse response JSON');
+}
+
+function extractNum(text, key) {
+  const m = text.match(new RegExp('"' + key + '"\\s*:\\s*(\\d+)'));
+  return m ? parseInt(m[1]) : 0;
+}
+
+function extractStr(text, key) {
+  const m = text.match(new RegExp('"' + key + '"\\s*:\\s*"([^"]*)"'));
+  return m ? m[1] : '';
 }
 
 async function runValuation() {
@@ -933,7 +996,7 @@ Price all values as integers. Base every number on real data you searched. If a 
 
     // Collect all text blocks (web search returns mixed tool_use + text blocks)
     const raw = data.content.map(b => b.type === 'text' ? b.text : '').filter(Boolean).join('');
-    const result = JSON.parse(extractJSON(raw.replace(/```json|```/gi, '')));
+    const result = safeParseJSON(extractJSON(raw));
     renderResults(result, make, model, condition, serial);
     incrementCounter();
 
