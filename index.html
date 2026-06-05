@@ -1000,14 +1000,15 @@ function renderResults(r, make, model, condition, serial) {
   });
 
   // Build real search URLs from make/model
-  const gbSearch = 'https://www.gunbroker.com/All/search?Keywords=' + encodeURIComponent(make + ' ' + model);
+  const gbSearch = 'https://www.gunbroker.com/All/search?Keywords=' + encodeURIComponent(make + ' ' + model) + '&Condition=0&HasBuyNow=0&HasSold=1';
+  const gbSold = 'https://www.gunbroker.com/All/search?Keywords=' + encodeURIComponent(make + ' ' + model) + '&SortField=13&SortOrder=1&HasSold=1';
   const gaSearch = 'https://www.gunsamerica.com/Search.aspx?T=1&q=' + encodeURIComponent(make + ' ' + model);
   const riaSearch = 'https://www.rockislandauction.com/search#q=' + encodeURIComponent(make + ' ' + model);
   const giSearch = 'https://www.gunsinternational.com/guns-for-sale-online/?q=' + encodeURIComponent(make + ' ' + model);
 
   function getSearchLink(source) {
     const s = (source || '').toLowerCase();
-    if (s.includes('gunbroker')) return gbSearch;
+    if (s.includes('gunbroker')) return gbSold;
     if (s.includes('rock island') || s.includes('ria')) return riaSearch;
     if (s.includes('gunsamerica') || s.includes('guns america')) return gaSearch;
     if (s.includes('guns international')) return giSearch;
