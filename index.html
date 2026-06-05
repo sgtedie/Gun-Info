@@ -1016,15 +1016,19 @@ function renderResults(r, make, model, condition, serial) {
   }
 
   if (r.compSales?.length) panels.push({
-    icon: '◇', title: 'Comparable Sold Listings',
+    icon: '◇', title: 'AI-Estimated Comparable Sales',
     body: `<div class="comp-list">${r.compSales.map(s => {
-      const link = `<a href="${getSearchLink(s.source)}" target="_blank" rel="noopener" class="comp-link">↗ Search ${s.source || 'GunBroker'}</a>`;
       return `<div class="comp-item">
-        <div><div class="comp-desc">${s.description}</div><div class="comp-source">${s.source} ${link}</div></div>
+        <div><div class="comp-desc">${s.description}</div><div class="comp-source">${s.source}</div></div>
         <div class="comp-price">${fmt(s.price)}</div>
       </div>`;
     }).join('')}</div>
-    <div style="margin-top:12px;font-size:12px;color:var(--text-dim)">Links open live search results for this firearm on each platform.</div>`
+    <div style="margin-top:4px;font-size:12px;color:var(--text-dim);line-height:1.6">These are AI-estimated values based on market knowledge. Verify current sold prices using the button below.</div>
+    <div style="margin-top:12px">
+      <a href="${gbSold}" target="_blank" rel="noopener" class="search-btn" style="font-size:12px;padding:10px 20px;display:inline-block">
+        ↗ View Sold Listings on GunBroker
+      </a>
+    </div>`
   });
 
   if (r.liveListings?.length) panels.push({
